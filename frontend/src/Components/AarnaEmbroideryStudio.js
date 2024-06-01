@@ -1,10 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import Modal from 'react-modal';
 import '../styles.css';
 import loadingGif from '../loading.gif';
+
+Modal.setAppElement('#root'); // For accessibility
 
 const AarnaEmbroideryStudio = () => {
     const [loading, setLoading] = useState(true);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [userDetails, setUserDetails] = useState({
+        name: '',
+        mobile: '',
+        whatsapp: '',
+        street: '',
+        village: '',
+        mandal: '',
+        district: '',
+        pincode: '',
+        color: '',
+        quantity: 1
+    });
+    
     const productImages = [
         "https://res.cloudinary.com/dyiua1ub9/image/upload/v1716702660/mcwnfg5nsa7ec0hurmro.jpg",
         "https://res.cloudinary.com/dyiua1ub9/image/upload/v1716702661/vd0vpkajisrvwvnd3b1y.jpg",
@@ -77,6 +94,19 @@ const AarnaEmbroideryStudio = () => {
         window.open(whatsappUrl, '_blank');
     };
 
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserDetails({ ...userDetails, [name]: value });
+    };
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        initiatePayment();
+    };
+
     return (
         <>
             {loading ? (
@@ -123,31 +153,101 @@ const AarnaEmbroideryStudio = () => {
                                 <p><strong>Length:</strong> 1 meter</p>
                                 <p><strong>Colors Available:</strong> Red, Blue, Green</p>
                                 <div className="d-flex justify-content-between mt-4">
-                                    <button className="btn btn-primary" onClick={initiatePayment}>Buy Now</button>
-                                    
+                                    <button className="btn btn-primary" onClick={openModal}>Buy Now</button>
                                 </div>
-                                <div class="my-4">
-                                    <a href="https://wa.me/+919676393594" class="btn btn-success" target="_blank">
-                                        <i class="fab fa-whatsapp"></i> Enquiry
+                                <div className="my-4">
+                                    <a href="https://wa.me/+919676393594" className="btn btn-success" target="_blank" rel="noopener noreferrer">
+                                        <i className="fab fa-whatsapp"></i> Enquiry
                                     </a>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                
-                                <a href="https://instagram.com/aarna_embroidery_studio" target="_blank" rel="noopener noreferrer" className="me-3">
-                                    <i className="fab fa-instagram fa-2x"></i>
-                                </a>
-                                <a href="https://www.youtube.com/@amanigeela" target="_blank" rel="noopener noreferrer">
-                                    <i className="fab fa-youtube fa-2x"></i>
-                                </a>
+                                    <a href="https://instagram.com/aarna_embroidery_studio" target="_blank" rel="noopener noreferrer" className="me-3">
+                                        <i className="fab fa-instagram fa-2x"></i>
+                                    </a>
+                                    <a href="https://www.youtube.com/@amanigeela" target="_blank" rel="noopener noreferrer">
+                                        <i className="fab fa-youtube fa-2x"></i>
+                                    </a>
                                 </div>
-                                <div class="my-4">
-                                <button className="btn btn-info me-3" onClick={shareProduct}>Share</button>
-                            </div>
+                                <div className="my-4">
+                                    <button className="btn btn-info me-3" onClick={shareProduct}>Share</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                contentLabel="Delivery Details Form"
+                className="Modal"
+                overlayClassName="Overlay"
+            >
+                <h2>Delivery Details</h2>
+                <form onSubmit={handleFormSubmit}>
+                    <div className="form-block">
+                        <h3>Personal Information</h3>
+                        <label>
+                            Name:
+                            <input type="text" name="name" value={userDetails.name} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            Mobile Number:
+                            <input type="text" name="mobile" value={userDetails.mobile} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            WhatsApp Number:
+                            <input type="text" name="whatsapp" value={userDetails.whatsapp} onChange={handleInputChange} required />
+                        </label>
+                    </div>
+                    <div className="form-block">
+                        <h3>Shipping Address</h3>
+                        <label>
+                            Street:
+                            <input type="text" name="street" value={userDetails.street} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            Village:
+                            <input type="text" name="village" value={userDetails.village} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            Mandal:
+                            <input type="text" name="mandal" value={userDetails.mandal} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            District:
+                            <input type="text" name="district" value={userDetails.district} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            Pincode:
+                            <input type="text" name="pincode" value={userDetails.pincode} onChange={handleInputChange} required />
+                        </label>
+                    </div>
+                    <div className="form-block">
+                        <h3>Product Information</h3>
+                        <label>
+                            Color:
+                            <input type="text" name="color" value={userDetails.color} onChange={handleInputChange} required />
+                        </label>
+                        <br />
+                        <label>
+                            Quantity:
+                            <input type="number" name="quantity" value={userDetails.quantity} onChange={handleInputChange} min="1" required />
+                        </label>
+                    </div>
+                    <div className="form-block">
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                        <button type="button" onClick={closeModal} className="btn btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </Modal>
         </>
     );
 };
